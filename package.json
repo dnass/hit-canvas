@@ -1,0 +1,24 @@
+{
+  "name": "hit-canvas",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && vite build"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "devDependencies": {
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
+    "vite-plugin-dts": "^3.6.0"
+  }
+}
