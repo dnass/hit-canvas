@@ -1,42 +1,19 @@
-import {
-  idToRgb as idToRgbDefault,
-  rgbToId as rgbToIdDefault,
-} from './util.js';
+import { idToRgb as idToRgbDefault, rgbToId as rgbToIdDefault } from './util';
+import { CreateHitCanvas, HitCanvasRenderingContext2D } from './types';
 
-export interface HitCanvasRenderingContext2D
-  extends Omit<CanvasRenderingContext2D, 'canvas'> {
-  getLayerIdAt(x: number, y: number): number;
-  setCurrentLayerId: (id: number) => void;
-}
-
-type HitCanvasOptions = {
-  rgbToId?: (rgb: [number, number, number]) => number;
-  idToRgb?: (id: number) => [number, number, number];
-};
-
-const EXCLUDED_GETTERS = ['drawImage'];
 const EXCLUDED_SETTERS = [
   'filter',
   'shadowBlur',
   'globalCompositeOperation',
   'globalAlpha',
-];
-const COLOR_OVERRIDES = [
-  'drawImage',
-  'fill',
-  'fillRect',
-  'fillText',
-  'stroke',
-  'strokeRect',
-  'strokeText',
+  'fillStyle',
+  'strokeStyle',
 ];
 
-const createHitCanvas = (
-  canvas: HTMLCanvasElement,
-  { rgbToId = rgbToIdDefault, idToRgb = idToRgbDefault }: HitCanvasOptions = {},
-): HitCanvasRenderingContext2D => {
-  let currentLayer: number;
-
+const createHitCanvas: CreateHitCanvas = (
+  canvas,
+  { rgbToId = rgbToIdDefault, idToRgb = idToRgbDefault } = {},
+) => {
   const context = canvas.getContext('2d');
 
   const proxyCanvas = new OffscreenCanvas(canvas.width, canvas.height);
@@ -61,7 +38,10 @@ const createHitCanvas = (
 
       if (property === 'setCurrentLayerId') {
         return (id: number) => {
-          currentLayer = id;
+          const [r, g, b] = idToRgb(id);
+          const layerColor = `rgb(${r},${g},${b})`;
+          proxyContext.fillStyle = layerColor;
+          proxyContext.strokeStyle = layerColor;
         };
       }
 
@@ -71,21 +51,15 @@ const createHitCanvas = (
       }
 
       return (...args: any[]) => {
-        if (COLOR_OVERRIDES.includes(property)) {
-          const [r, g, b] = idToRgb(currentLayer);
-          const layerColor = `rgb(${r},${g},${b})`;
-          proxyContext.fillStyle = layerColor;
-          proxyContext.strokeStyle = layerColor;
-        }
+        let proxyProp = property;
+        let proxyArgs = args;
 
         if (property === 'drawImage') {
-          const rectArgs = args.slice(1) as Parameters<CanvasRect['fillRect']>;
-          proxyContext.fillRect(...rectArgs);
+          proxyProp = 'fillRect';
+          proxyArgs = args.slice(1);
         }
 
-        if (!EXCLUDED_GETTERS.includes(property)) {
-          (<Function>proxyContext[property])(...args);
-        }
+        (<Function>proxyContext[proxyProp])(...proxyArgs);
 
         return Reflect.apply(val, target, args);
       };

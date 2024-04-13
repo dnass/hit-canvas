@@ -1,4 +1,2 @@
-export {
-  createHitCanvas,
-  type HitCanvasRenderingContext2D,
-} from './createHitCanvas';
+export { createHitCanvas } from './createHitCanvas';
+export type { HitCanvasRenderingContext2D } from './types';
