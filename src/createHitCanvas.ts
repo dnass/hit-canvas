@@ -56,7 +56,7 @@ const createHitCanvas: CreateHitCanvas = (
 
         if (property === 'drawImage') {
           proxyProp = 'fillRect';
-          proxyArgs = args.slice(1);
+          proxyArgs = args.slice(-4);
         }
 
         (<Function>proxyContext[proxyProp])(...proxyArgs);
