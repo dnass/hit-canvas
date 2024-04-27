@@ -6,7 +6,8 @@ interface HitCanvasOptions {
 export interface CreateHitCanvas {
   (
     canvas: HTMLCanvasElement,
-    options?: HitCanvasOptions,
+    contextSettings?: CanvasRenderingContext2DSettings,
+    hitCanvasOptions?: HitCanvasOptions,
   ): HitCanvasRenderingContext2D;
 }
 

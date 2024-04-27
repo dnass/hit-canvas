@@ -1,3 +1,7 @@
+## 0.2.0
+
+- Add `contextSettings` parameter
+
 ## 0.1.1
 
 - Correctly handle nine-argument `drawImage`

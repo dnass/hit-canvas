@@ -12,13 +12,15 @@ const EXCLUDED_SETTERS = [
 
 const createHitCanvas: CreateHitCanvas = (
   canvas,
+  contextSettings,
   { rgbToId = rgbToIdDefault, idToRgb = idToRgbDefault } = {},
 ) => {
-  const context = canvas.getContext('2d');
+  const context = canvas.getContext('2d', contextSettings);
 
   const proxyCanvas = new OffscreenCanvas(canvas.width, canvas.height);
   const proxyContext = proxyCanvas.getContext('2d', {
     willReadFrequently: true,
+    alpha: contextSettings?.alpha ?? true,
   }) as unknown as HitCanvasRenderingContext2D;
 
   const canvasObserver = new MutationObserver(() => {
