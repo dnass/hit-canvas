@@ -1,5 +1,5 @@
 import { idToRgb as idToRgbDefault, rgbToId as rgbToIdDefault } from './util';
-import { CreateHitCanvas, HitCanvasRenderingContext2D } from './types';
+import type { CreateHitCanvas, HitCanvasRenderingContext2D } from './types';
 
 const EXCLUDED_SETTERS = [
   'filter',
@@ -23,14 +23,16 @@ const createHitCanvas: CreateHitCanvas = (
     alpha: contextSettings?.alpha ?? true,
   }) as unknown as HitCanvasRenderingContext2D;
 
-  const canvasObserver = new MutationObserver(() => {
-    proxyCanvas.width = canvas.width;
-    proxyCanvas.height = canvas.height;
-  });
-  canvasObserver.observe(canvas, { attributeFilter: ['width', 'height'] });
+  let currentWidth = canvas.width,
+    currentHeight = canvas.height;
 
   return new Proxy(context as unknown as HitCanvasRenderingContext2D, {
     get(target, property: keyof HitCanvasRenderingContext2D) {
+      if (canvas.width !== currentWidth || canvas.height !== currentHeight) {
+        currentWidth = proxyCanvas.width = canvas.width;
+        currentHeight = proxyCanvas.height = canvas.height;
+      }
+
       if (property === 'getLayerIdAt') {
         return (x: number, y: number) => {
           const [r, g, b] = proxyContext.getImageData(x, y, 1, 1).data;

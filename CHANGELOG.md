@@ -1,3 +1,7 @@
+## 0.2.1
+
+- Resize canvas synchronously.
+
 ## 0.2.0
 
 - Add `contextSettings` parameter
