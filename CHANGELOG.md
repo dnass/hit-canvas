@@ -1,3 +1,7 @@
+## 0.2.2
+
+- Don't use `willReadFrequently` or `alpha` on proxy context.
+
 ## 0.2.1
 
 - Resize canvas synchronously.

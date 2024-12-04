@@ -19,18 +19,17 @@ const createHitCanvas: CreateHitCanvas = (
 
   const proxyCanvas = new OffscreenCanvas(canvas.width, canvas.height);
   const proxyContext = proxyCanvas.getContext('2d', {
-    willReadFrequently: true,
-    alpha: contextSettings?.alpha ?? true,
+    willReadFrequently: false,
+    alpha: false,
   }) as unknown as HitCanvasRenderingContext2D;
-
-  let currentWidth = canvas.width,
-    currentHeight = canvas.height;
 
   return new Proxy(context as unknown as HitCanvasRenderingContext2D, {
     get(target, property: keyof HitCanvasRenderingContext2D) {
-      if (canvas.width !== currentWidth || canvas.height !== currentHeight) {
-        currentWidth = proxyCanvas.width = canvas.width;
-        currentHeight = proxyCanvas.height = canvas.height;
+      const { width, height } = canvas;
+
+      if (width !== proxyCanvas.width || height !== proxyCanvas.height) {
+        proxyCanvas.width = width;
+        proxyCanvas.height = height;
       }
 
       if (property === 'getLayerIdAt') {
