@@ -16,11 +16,9 @@ const context = createHitCanvas(canvas);
 
 context.setCurrentLayerId(1);
 context.fillRect(0, 0, 10, 10);
-context.commitLayer();
 
 context.setCurrentLayerId(2);
 context.drawImage(new Image(), 10, 10, 10, 10);
-context.commitLayer();
 
 context.getLayerIdAt(5, 5);   // 1
 context.getLayerIdAt(15, 15); // 2
